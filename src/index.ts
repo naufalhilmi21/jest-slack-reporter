@@ -1,91 +1,66 @@
-import { IncomingWebhook } from '@slack/webhook';
-// @ts-ignore
-import Parser from "junitxml-to-javascript";
-const url: any = process.env.SLACK_WEBHOOK_URL;
-const jobUrl = process.env.CI_JOB_URL
-const pipelineUrl = process.env.CI_PIPELINE_URL
-const webhook = new IncomingWebhook(url);
-const p = new Parser();
+// import { IncomingWebhook } from '@slack/webhook';
+import { readFile } from 'fs'
+import { TestResults } from '../types/messageTypes';
 
-let reportObject: any = {};
-let errorResult = 0;
-let passedResult = 0;
-let skippedResult = 0;
-let testTotal = 0;
+export default function (reportJSON: string, webhook: string, message: string) {
+    let attachment: any;
 
-async function createReport() {
-  // Read junit report
-  await p.parseXMLFile("./reports/combined-junit.xml", "utf8")
-    .then((report: any) => reportObject = report)
-    .catch((err: any) => console.error(err.message));
+    readFile(reportJSON, (err, data: any) => {
+        if (err) throw new Error('Please provide a valid json file');;
+        attachment = generateMessage(JSON.parse(data), message);
+    });
 
-  reportObject.testsuites.forEach((element: { tests: number; errors: number; skipped: number; succeeded: number; }) => {
-    testTotal += element.tests;
-    errorResult += element.errors;
-    skippedResult += element.skipped;
-    passedResult += element.succeeded;
-  })
+    console.log(attachment);
+    console.log(webhook);
+    console.log('sdfsdfsdf')
+}
+
+export function printSome(message: string) {
+    console.log(message);
 }
 
 // Send the notification
-(async () => {
-  await createReport();
-  console.log('Sending slack message');
-  const message: object = await generateMessage();
+// (async () => {
+//   await createReport();
+//   console.log('Sending slack message');
+//   const message: object = await generateMessage();
 
-  try {
-    const slackResponse = await webhook.send(message);
-    console.log('Message response', slackResponse);
-  } catch (e) {
-    console.error('There was a error with the request', e);
-  }
-})();
+//   try {
+//     const slackResponse = await webhook.send(message);
+//     console.log('Message response', slackResponse);
+//   } catch (e) {
+//     console.error('There was a error with the request', e);
+//   }
+// })();
 
-async function generateMessage() {
-  const passed = errorResult > 0 ? false : true;
-  const slackId = `<@${process.env.PIC_SLACK_ID}>`;
-  const messageIntro = passed ? "*Yeay, all the tests has passed* :anya-waku-waku:": 
-                                "*I've got bad news for you..* :anya-cry:\n" + slackId;
+function generateMessage(result: TestResults, message: string) {
+  const passed = result.numFailedTests > 0 ? false : true;
   const sidebarColor = passed ? '#00FF00' : '#ff3333'
   return {
-    text: messageIntro + '\n\nThis is the result for *Backend E2E Test*',
+    text: message,
     attachments: [
       { 
         color: sidebarColor, // color of the attachments sidebar.
         fields: [
           {
             title: 'Total Tests',
-            value: testTotal,
+            value: result.numTotalTests,
             short: true
           },
           {
             title: 'Skipped',
-            value: skippedResult,
+            value: result.numPendingTests,
             short: true
           },
           {
             title: 'Passed',
-            value: passedResult,
+            value: result.numPassedTests,
             short: true
           },
           {
             title: 'Failed',
-            value: errorResult,
+            value: result.numFailedTests,
             short: true
-          }
-        ],
-        actions: [
-          {
-            type: 'button',
-            text: 'Test Report',
-            style: 'primary',
-            url: pipelineUrl + '/test_report'
-          },
-          {
-            type: 'button',
-            text: 'Job Details',
-            style: 'danger',
-            url: jobUrl
           }
         ]
       }
