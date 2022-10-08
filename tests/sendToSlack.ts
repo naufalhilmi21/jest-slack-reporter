@@ -1,4 +1,3 @@
-import sendReport, { printSome } from '../src'
+import sendReport from '../src'
 
-sendReport('./report.json', 'essfdsklafjdlskj', 'this is a message')
-printSome('sdfsdfs')
+sendReport('./report.json', 'essfdsklafjdlskj', 'this is a message');

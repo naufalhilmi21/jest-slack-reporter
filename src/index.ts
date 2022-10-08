@@ -7,16 +7,15 @@ export default function (reportJSON: string, webhook: string, message: string) {
 
     readFile(reportJSON, (err, data: any) => {
         if (err) throw new Error('Please provide a valid json file');;
-        attachment = generateMessage(JSON.parse(data), message);
+        
+        try {
+            const results = (JSON.parse(reportJSON)).numPassedTests;
+          } catch (err) {
+            console.log("Error parsing JSON string, please provide jest json result", err);
+          }
     });
 
-    console.log(attachment);
     console.log(webhook);
-    console.log('sdfsdfsdf')
-}
-
-export function printSome(message: string) {
-    console.log(message);
 }
 
 // Send the notification
