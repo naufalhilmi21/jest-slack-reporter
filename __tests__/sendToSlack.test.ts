@@ -3,7 +3,7 @@ import sendReport from '../src'
 
 describe('Testing slack integration', () => {
     let response: any;
-    const webhookUrl = 'https://hooks.slack.com/services/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';
+    const webhookUrl: any = process.env.SLACK_WEBHOOK_URL;
     
     test('Valid input', async () => {
         console.log = jest.fn();
