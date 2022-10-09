@@ -23,3 +23,15 @@ const reportLocation = './test-report.json'
 })();
 
 ```
+
+*Use custom message*
+
+```
+(async () => {
+  await sendToSlack(reportLocation, webhookUrl, {
+    successMessage: 'Wohoo all the test passed',
+    failedMessage: 'So sad there are tests have failed'
+  })
+  ...
+})();
+```
