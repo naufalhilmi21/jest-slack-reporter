@@ -1,8 +1,8 @@
 {
-  "name": "jest-slack-reporter",
+  "name": "jest-json-slack",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
