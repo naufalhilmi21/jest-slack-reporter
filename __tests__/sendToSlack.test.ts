@@ -1,4 +1,3 @@
-import exp from 'constants';
 import sendReport from '../src'
 
 describe('Testing slack integration', () => {
