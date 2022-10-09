@@ -10,3 +10,8 @@ export interface TestResults {
     numPendingTestSuites: number;
     numPendingTests: number;
 }
+
+export interface CustomMessage {
+    successMessage: string;
+    failedMessage: string;
+}
