@@ -1,12 +1,20 @@
 {
   "name": "jest-json-slack",
-  "version": "1.0.3",
-  "description": "",
-  "main": "src/index.ts",
+  "version": "1.1.0",
+  "description": "Your jest json slack integration",
+  "main": "lib/index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
-  "keywords": [],
+  "keywords": [
+    "jest",
+    "slack",
+    "plugin",
+    "test",
+    "reporter"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

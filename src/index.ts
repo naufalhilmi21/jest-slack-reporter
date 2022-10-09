@@ -2,7 +2,7 @@ import { IncomingWebhook } from '@slack/webhook';
 import { readFileSync } from 'fs'
 import { CustomMessage, TestResults } from '../types/messageTypes';
 
-export default async function (reportJSON: string, webhookUrl: string, message?: CustomMessage) {
+export async function postMessage(reportJSON: string, webhookUrl: string, message?: CustomMessage) {
     const rawResult = readFileSync(reportJSON);
     const jestResult: TestResults = JSON.parse(rawResult.toString());
 
