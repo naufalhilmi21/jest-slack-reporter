@@ -1,42 +1,37 @@
-// import { IncomingWebhook } from '@slack/webhook';
-import { readFile } from 'fs'
+import { IncomingWebhook } from '@slack/webhook';
+import { readFileSync } from 'fs'
 import { TestResults } from '../types/messageTypes';
 
-export default function (reportJSON: string, webhook: string, message: string) {
-    let attachment: any;
+export default async function (reportJSON: string, webhookUrl: string, message?: string) {
+    const rawResult = readFileSync(reportJSON);
+    const jestResult: TestResults = JSON.parse(rawResult.toString());
 
-    readFile(reportJSON, (err, data: any) => {
-        if (err) throw new Error('Please provide a valid json file');;
-        
-        try {
-            const results = (JSON.parse(reportJSON)).numPassedTests;
-          } catch (err) {
-            console.log("Error parsing JSON string, please provide jest json result", err);
-          }
-    });
+    if (jestResult.numFailedTests == undefined) throw new Error('Not a valid jest result');
 
-    console.log(webhook);
+    if (message != undefined) {
+      await sendToSlack(webhookUrl, generateMessage(jestResult, message));
+    } else {
+      await sendToSlack(webhookUrl, generateMessage(jestResult));
+    }
 }
 
-// Send the notification
-// (async () => {
-//   await createReport();
-//   console.log('Sending slack message');
-//   const message: object = await generateMessage();
+async function sendToSlack(webhookUrl: string, messageContent: object) {
+  const webhook = new IncomingWebhook(webhookUrl);
+  try {
+    const slackResponse = await webhook.send(messageContent);
+    console.log('Message response', slackResponse);
+  } catch (e) {
+    throw new Error('There was an error with the request. Please check your webhook url.');
+  }
+}
 
-//   try {
-//     const slackResponse = await webhook.send(message);
-//     console.log('Message response', slackResponse);
-//   } catch (e) {
-//     console.error('There was a error with the request', e);
-//   }
-// })();
-
-function generateMessage(result: TestResults, message: string) {
+function generateMessage(result: TestResults, message?: string) {
   const passed = result.numFailedTests > 0 ? false : true;
-  const sidebarColor = passed ? '#00FF00' : '#ff3333'
+  const sidebarColor = passed ? '#00FF00' : '#ff3333';
+  const defaultMessage = passed ? 'Great News! All tests have passed!' : 'Bad News! Test run has failed test';
+  
   return {
-    text: message,
+    text: message || defaultMessage,
     attachments: [
       { 
         color: sidebarColor, // color of the attachments sidebar.
