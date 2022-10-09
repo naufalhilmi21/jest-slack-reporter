@@ -24,7 +24,7 @@ const reportLocation = './test-report.json'
 
 ```
 
-*Use custom message*
+**Use custom message**
 
 ```
 (async () => {
@@ -35,3 +35,5 @@ const reportLocation = './test-report.json'
   ...
 })();
 ```
+
+![Sample Screenshot](assets/sample_message.png)
