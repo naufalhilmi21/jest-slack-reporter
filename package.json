@@ -1,6 +1,6 @@
 {
   "name": "jest-json-slack",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Your jest json slack integration",
   "main": "lib/index.js",
   "type": "commonjs",
